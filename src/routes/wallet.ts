@@ -53,7 +53,6 @@ router.get(
             chains: chains.map(chain => ({
                 id: chain.id,
                 name: chain.name,
-                network: chain.network,
                 nativeCurrency: chain.nativeCurrency,
                 rpcUrls: chain.rpcUrls,
                 blockExplorers: chain.blockExplorers,
@@ -86,7 +85,6 @@ router.get(
             chain: {
                 id: chainInfo.id,
                 name: chainInfo.name,
-                network: chainInfo.network,
                 nativeCurrency: chainInfo.nativeCurrency,
                 rpcUrls: chainInfo.rpcUrls,
                 blockExplorers: chainInfo.blockExplorers,
