@@ -13,7 +13,6 @@ export class SessionManager {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
-      retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,
       lazyConnect: true,
     })
@@ -37,7 +36,7 @@ export class SessionManager {
       })
 
       await this.redis.setex(key, this.sessionExpiry / 1000, sessionData)
-      
+
       // Also store by address for quick lookup
       const addressKey = this.getAddressKey(session.address)
       await this.redis.sadd(addressKey, session.id)
@@ -113,7 +112,7 @@ export class SessionManager {
     try {
       const addressKey = this.getAddressKey(address)
       const sessionIds = await this.redis.smembers(addressKey)
-      
+
       const sessions: WalletSession[] = []
       for (const sessionId of sessionIds) {
         const session = await this.getSession(sessionId)
@@ -133,7 +132,7 @@ export class SessionManager {
     try {
       const pattern = this.getSessionKey('*')
       const keys = await this.redis.keys(pattern)
-      
+
       const sessions: WalletSession[] = []
       for (const key of keys) {
         const sessionData = await this.redis.get(key)
@@ -158,7 +157,7 @@ export class SessionManager {
     try {
       const pattern = this.getSessionKey('*')
       const keys = await this.redis.keys(pattern)
-      
+
       let cleanedCount = 0
       for (const key of keys) {
         const ttl = await this.redis.ttl(key)
@@ -170,7 +169,7 @@ export class SessionManager {
           const sessionId = key.replace('session:', '')
           const addressKey = this.getAddressKey('*')
           const addressKeys = await this.redis.keys(addressKey)
-          
+
           for (const addrKey of addressKeys) {
             await this.redis.srem(addrKey, sessionId)
           }
