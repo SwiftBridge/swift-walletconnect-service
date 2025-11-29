@@ -17,9 +17,10 @@ router.get(
 
         // Validate address format
         if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
-            return res.status(400).json({
+            res.status(400).json({
                 error: 'Invalid address format',
             })
+            return
         }
 
         const nonce = `Sign this message to authenticate with Swift v2.\n\nNonce: ${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -44,9 +45,10 @@ router.post(
         const { address, signature, message } = req.body
 
         if (!address || !signature || !message) {
-            return res.status(400).json({
+            res.status(400).json({
                 error: 'Missing required fields: address, signature, message',
             })
+            return
         }
 
         // TODO: Implement actual signature verification with ethers/viem
@@ -55,9 +57,10 @@ router.post(
 
         if (!isValid) {
             logger.warn('Invalid signature format', { address })
-            return res.status(401).json({
+            res.status(401).json({
                 error: 'Invalid signature',
             })
+            return
         }
 
         logger.info('Signature verified', { address })
@@ -80,10 +83,11 @@ router.get(
         const sessionId = req.headers['x-session-id'] as string
 
         if (!sessionId) {
-            return res.status(401).json({
+            res.status(401).json({
                 authenticated: false,
                 message: 'No session ID provided',
             })
+            return
         }
 
         // TODO: Check session validity with SessionManager

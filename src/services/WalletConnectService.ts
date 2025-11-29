@@ -34,7 +34,7 @@ export class WalletConnectService {
   constructor() {
     this.logger = new Logger()
     this.sessionManager = new SessionManager()
-    
+
     this.config = {
       projectId: process.env.WALLETCONNECT_PROJECT_ID || '',
       baseRpcUrl: process.env.BASE_RPC_URL || 'https://mainnet.base.org',
@@ -63,8 +63,8 @@ export class WalletConnectService {
   private initializeAppKit() {
     this.appKit = createAppKit({
       adapters: [this.wagmiConfig],
+      networks: [base, mainnet],
       projectId: this.config.projectId,
-      defaultChain: base,
       metadata: this.config.metadata,
       features: {
         analytics: true,
@@ -91,7 +91,7 @@ export class WalletConnectService {
 
       await this.sessionManager.createSession(session)
       this.logger.info('Wallet session created', { sessionId: session.id, address })
-      
+
       return session
     } catch (error) {
       this.logger.error('Failed to create wallet session', error)
@@ -123,7 +123,7 @@ export class WalletConnectService {
 
       const updatedSession = { ...session, ...updates, lastActivity: new Date() }
       await this.sessionManager.updateSession(updatedSession)
-      
+
       this.logger.info('Wallet session updated', { sessionId, updates })
       return true
     } catch (error) {
